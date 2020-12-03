@@ -129,6 +129,29 @@
 
   8. errors.Is(err, target)  类似等值判断,err链值中是否有err值是等于sentinel error的.
 
-  9. errors.As(err, &var)  err链值中是否有可以存入到var中的err
+  9. errors.As(err, &var)  err链值中是否有可以存入到var中的err.
+
+  10. fmt.Errorf()   +  %w  : 自定义类型,要实现Error()string  /  UnWrap() error 返回根因.
+
+  11. 使用Is在自定义err时,可以自定义Is方法.自己定义err等值逻辑,而不是用系统默认的.
+
+  12. 标准库errors,没有加堆栈信息.
+
+* panic处理,如果产生野生goroutine,请按如下处理.
+
+  ```go
+  func Go(x func()){
+      go func(){
+          defer func(){
+              if err := recover(); err != nil {
+                  fmt.Println(err)
+              }
+          }
+          x()
+      }()
+  }
+  ```
+
+  
 
 * 
