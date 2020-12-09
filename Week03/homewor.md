@@ -13,20 +13,27 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-func f() error {
+func Start() error {
 	return nil
 }
 
+func Shutdown()error {
+    return nil
+}
+
 func main() {
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+	ctx, cancel := context.WithCancel(context.Background()) // v0
+	// v1
 
-	g, ctx := errgroup.WithContext(ctx)
-
-	go g.Go(f)
+	g, ctx := errgroup.WithContext(ctx)  
+     // v2
+	
+    
+	g.Go(Start)
+    g.Go(Shutdown)
 
 	if err := g.Wait(); err != nil {
-		
+        cancel()
 	}
 }
 
