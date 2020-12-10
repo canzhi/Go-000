@@ -242,6 +242,34 @@ concurrency
 
 * setreaddeadline 
 
+* Notes
+
+  > Incoming requests to a server should create a Context.
+  >
+  > Outgoing calls to servers should accept a Context.
+  >
+  > Do not store Contexts inside a struct type; instead, pass a Context explicitly to each function that needs it.
+  >
+  > The chain of function calls between them must propagate the Context.
+  >
+  > Replace a Context using WithCancel, WithDeadline, WithTimeout, or WithValue.
+  >
+  > When a Context is canceld, all Contexts derived from it are alse canceled.
+  >
+  > The same Context may be passed to functions running in different goroutines; Context are safe for simultaneous use by multiple goroutines.
+  >
+  > Do not pass a nil Context,even if a function permits it.Pass a TODO context if you are unsure about which Context to use.
+  >
+  > Use context values only for request-scoped data that transits processes and APIs, not for passing optional parameters to functions.
+  >
+  > All blocking/long operations should be cancelable.
+  >
+  > Context.Value obscures your program's flow.
+  >
+  > Context.Value should inform, not control.
+  >
+  > Try not to use context.Value.
+
 
 
 
@@ -250,13 +278,73 @@ concurrency
 
 # CHAN
 
-* 
+>  Do not communicate by sharing memory; instead, share memory by communicating.
+
+* 无缓冲channel原理
+
+  ![](F:\陈晓会\GO\极客大学\Go-000\Week03\unbuffered_channel.png)
+
+* 无缓冲通道的本质是保证同步.
+
+  > Receive 不晚于 Send发生.
+  >
+  > 好处: 100% 保证能收到.
+  >
+  > 代价: 延迟时间未知.
+
+* 延迟厉害.
 
 
 
 
 
+* 有缓冲channel原理
 
+![](F:\陈晓会\GO\极客大学\Go-000\Week03\buffered_channel.png)
+
+* 基本无延迟, reduce blocking latency
+
+> Send 不晚于 Receive 发生
+
+* 不保证数据到达, 越大的buffer, 越小的保障到达. buffer = 1时,给你延迟一个消息的保证.
+
+
+
+
+
+* 保障率: 1/buffered_size  * 100% (无缓冲时,100%)
+
+
+
+* Tming out  超时
+* Moving on 放弃数据 select 中的 defalut
+* Pipeling  ->ch1 -> ch2 -> ch3 ->ch4 ->ch5
+* Fan-out 扇出   -> ch->goroutine1, goroutine2, goroutine3,... ...; Fan-in 扇入   ch1, ch2, ch3, ch4,... ... ->goroutine
+* Cancellation
+  * close先于receive发生
+  * 只有发送者知道什么时候close.
+  * 不需要传递数据,或nil
+  * 适合去做超时控制
+* Context
+
+
+
+
+
+* 设计哲学
+
+  * If any given Send on a channel CAN cause the sending goroutine to bloack:
+  * If any given Send on a cha nnel WON'T cause the sending goroutine to block:
+  * Less is more with buffers.
+
+* master-worker
+
+* kafka: 一个partition一个进程,来消费.
+
+  > 程序运行遇到瓶颈:
+  >
+  > 1. cpu是否达到100%.
+  > 2. 程序代码有问题,串行并用/大锁.
 
 
 
